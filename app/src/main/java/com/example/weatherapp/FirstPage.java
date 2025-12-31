@@ -26,6 +26,7 @@ public class FirstPage extends AppCompatActivity {
             return insets;
         });
 
+
         Button5=findViewById(R.id.button5);
         Button5.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,6 +35,7 @@ public class FirstPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
         Button4=findViewById(R.id.button4);
         Button4.setOnClickListener(new View.OnClickListener() {
