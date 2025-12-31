@@ -87,10 +87,11 @@
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
             android:background="#56F8F2F2"
-            android:text="Country"
+            android:text="Country :"
             android:textColor="#0B0A0A"
             android:textColorHighlight="#652B6F"
             android:textColorHint="#0F0D0D"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -101,10 +102,11 @@
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
             android:background="#5DF4EAEA"
-            android:text="City"
+            android:text="City : "
             android:textColor="#141414"
             android:textColorHighlight="#482881"
             android:textColorHint="#09080B"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/country" />
 
