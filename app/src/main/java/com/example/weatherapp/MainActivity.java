@@ -1,6 +1,7 @@
 package com.example.weatherapp;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button searchBtn;
     private TextView countryTv, cityTv, tempTv, latTv, lonTv, sunriseTv, sunsetTv, windTv, humidityTv, airAqiTv;
     private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,20 @@ public class MainActivity extends AppCompatActivity {
         humidityTv = findViewById(R.id.humidity);
         airAqiTv = findViewById(R.id.air_aqi);
 
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/data/2.5/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        boolean fromGPS = getIntent().getBooleanExtra("fromGPS", false);
+        if (fromGPS) {
+            searchCityEt.setVisibility(View.GONE);
+            searchBtn.setVisibility(View.GONE);
+            double lat = getIntent().getDoubleExtra("lat", 0);
+            double lon = getIntent().getDoubleExtra("lon", 0);
+            fetchWeatherByCoords(lat, lon);
+        }
+
         searchBtn.setOnClickListener(v -> {
             String city = searchCityEt.getText().toString().trim();
             if (!city.isEmpty()) fetchWeather(city);
@@ -47,39 +63,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchWeather(String cityName) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.openweathermap.org/data/2.5/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
         WeatherApi api = retrofit.create(WeatherApi.class);
         api.getWeather(cityName, API_KEY, "metric").enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    WeatherResponse data = response.body();
-
-
-                    Locale l = new Locale("", data.sys.country);
-                    countryTv.setText("Country: " + l.getDisplayCountry());
-
-
-                    String status = data.weather.get(0).main;
-                    String desc = data.weather.get(0).description;
-
-                    tempTv.setText(Math.round(data.main.temp) + "°C | " + status);
-
-
-                    cityTv.setText("City: " + data.name);
-                    latTv.setText(": " + data.coord.lat);
-                    lonTv.setText(": " + data.coord.lon);
-                    windTv.setText(": " + data.wind.speed + " m/s");
-                    humidityTv.setText(": " + data.main.humidity + "%");
-                    sunriseTv.setText(": " + formatTime(data.sys.sunrise));
-                    sunsetTv.setText(": " + formatTime(data.sys.sunset));
-
-                    fetchAirQuality(data.coord.lat, data.coord.lon, retrofit);
-
+                    updateUI(response.body());
                 } else {
                     Toast.makeText(MainActivity.this, "City not found!", Toast.LENGTH_SHORT).show();
                 }
@@ -92,7 +81,42 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchAirQuality(double lat, double lon, Retrofit retrofit) {
+    private void fetchWeatherByCoords(double lat, double lon) {
+        WeatherApi api = retrofit.create(WeatherApi.class);
+        api.getWeatherByCoords(lat, lon, API_KEY, "metric").enqueue(new Callback<WeatherResponse>() {
+            @Override
+            public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    updateUI(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error fetching location weather", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateUI(WeatherResponse data) {
+        Locale l = new Locale("", data.sys.country);
+        countryTv.setText("Country: " + l.getDisplayCountry());
+
+        String status = data.weather.get(0).main;
+        tempTv.setText(Math.round(data.main.temp) + "°C | " + status);
+
+        cityTv.setText("City: " + data.name);
+        latTv.setText(": " + data.coord.lat);
+        lonTv.setText(": " + data.coord.lon);
+        windTv.setText(": " + data.wind.speed + " m/s");
+        humidityTv.setText(": " + data.main.humidity + "%");
+        sunriseTv.setText(": " + formatTime(data.sys.sunrise));
+        sunsetTv.setText(": " + formatTime(data.sys.sunset));
+
+        fetchAirQuality(data.coord.lat, data.coord.lon);
+    }
+
+    private void fetchAirQuality(double lat, double lon) {
         WeatherApi api = retrofit.create(WeatherApi.class);
         api.getAirQuality(lat, lon, API_KEY).enqueue(new Callback<AirResponse>() {
             @Override

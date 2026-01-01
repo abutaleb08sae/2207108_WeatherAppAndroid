@@ -17,4 +17,11 @@ public interface WeatherApi {
             @Query("lon") double lon,
             @Query("appid") String apiKey
     );
+    @GET("weather")
+    Call<WeatherResponse> getWeatherByCoords(
+            @Query("lat") double lat,
+            @Query("lon") double lon,
+            @Query("appid") String apiKey,
+            @Query("units") String units
+    );
 }
