@@ -37,6 +37,14 @@
             android:name=".MainActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".DetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".HourlyActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

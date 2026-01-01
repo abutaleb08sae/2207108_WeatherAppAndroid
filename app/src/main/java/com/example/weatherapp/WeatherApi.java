@@ -11,14 +11,24 @@ public interface WeatherApi {
             @Query("appid") String apiKey,
             @Query("units") String units
     );
+
     @GET("air_pollution")
     Call<AirResponse> getAirQuality(
             @Query("lat") double lat,
             @Query("lon") double lon,
             @Query("appid") String apiKey
     );
+
     @GET("weather")
     Call<WeatherResponse> getWeatherByCoords(
+            @Query("lat") double lat,
+            @Query("lon") double lon,
+            @Query("appid") String apiKey,
+            @Query("units") String units
+    );
+
+    @GET("forecast")
+    Call<ForecastResponse> getForecast(
             @Query("lat") double lat,
             @Query("lon") double lon,
             @Query("appid") String apiKey,

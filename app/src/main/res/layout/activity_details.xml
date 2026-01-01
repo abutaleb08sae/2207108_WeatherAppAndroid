@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".DetailsActivity">
+
+    <TextView
+        android:id="@+id/detailsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F8F4F4"
+        android:gravity="center"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:text="Weather Forecasts"
+        android:textColor="#100F0F"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailsTitle">
+
+        <Button
+            android:id="@+id/btn_hourly_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="15dp"
+            android:backgroundTint="#1F2E47"
+            android:text="Hourly Forecast"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:icon="@android:drawable/ic_menu_recent_history"
+            app:iconGravity="textStart"
+            app:iconPadding="15dp" />
+
+        <Button
+            android:id="@+id/btn_weekly_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="15dp"
+            android:backgroundTint="#1F2E47"
+            android:text="Weekly Forecast"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:icon="@android:drawable/ic_menu_my_calendar"
+            app:iconGravity="textStart"
+            app:iconPadding="15dp" />
+
+        <Button
+            android:id="@+id/btn_monthly_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="15dp"
+            android:backgroundTint="#1F2E47"
+            android:text="Monthly Forecast"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:icon="@android:drawable/ic_menu_month"
+            app:iconGravity="textStart"
+            app:iconPadding="15dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
