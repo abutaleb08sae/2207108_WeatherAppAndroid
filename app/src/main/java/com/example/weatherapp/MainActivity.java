@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.bumptech.glide.Glide;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText searchCityEt;
     private Button searchBtn, btnSeeMore;
     private TextView countryTv, cityTv, tempTv, latTv, lonTv, sunriseTv, sunsetTv, windTv, humidityTv, airAqiTv;
+    private TextView statusTv, feelsLikeTv, descriptionTv;
+    private ImageView mainWeatherIcon;
     private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
     private Retrofit retrofit;
     private double currentLat, currentLon;
@@ -44,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
         windTv = findViewById(R.id.wind_speed);
         humidityTv = findViewById(R.id.humidity);
         airAqiTv = findViewById(R.id.air_aqi);
+
+        statusTv = findViewById(R.id.weather_status);
+        feelsLikeTv = findViewById(R.id.feels_like);
+        descriptionTv = findViewById(R.id.weather_description);
+        mainWeatherIcon = findViewById(R.id.weather_icon_main);
 
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.openweathermap.org/data/2.5/")
@@ -118,10 +127,22 @@ public class MainActivity extends AppCompatActivity {
 
         Locale l = new Locale("", data.sys.country);
         countryTv.setText("Country: " + l.getDisplayCountry());
+        cityTv.setText(data.name);
 
         tempTv.setText(Math.round(data.main.temp) + "°");
+        feelsLikeTv.setText("Feels like " + Math.round(data.main.feels_like) + "°");
+        statusTv.setText(data.weather.get(0).main);
 
-        cityTv.setText(data.name);
+        String desc = data.weather.get(0).description;
+        descriptionTv.setText("The skies will be " + desc + ".");
+
+        String iconUrl = "https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@4x.png";
+        Glide.with(this)
+                .load(iconUrl)
+                .placeholder(android.R.drawable.ic_menu_report_image)
+                .error(android.R.drawable.ic_menu_close_clear_cancel)
+                .into(mainWeatherIcon);
+
         latTv.setText(": " + data.coord.lat);
         lonTv.setText(": " + data.coord.lon);
         windTv.setText(": " + data.wind.speed + " m/s");

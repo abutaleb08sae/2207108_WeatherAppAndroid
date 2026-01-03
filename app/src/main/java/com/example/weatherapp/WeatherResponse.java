@@ -11,27 +11,28 @@ public class WeatherResponse {
     public List<Weather> weather;
     public String name;
 
-    public class Coord {
-        public float lat;
-        public float lon;
+    public static class Coord {
+        public double lat;
+        public double lon;
     }
 
-    public class Main {
-        public float temp;
+    public static class Main {
+        public double temp;
+        public double feels_like;
         public int humidity;
     }
 
-    public class Wind {
-        public float speed;
+    public static class Wind {
+        public double speed;
     }
 
-    public class Sys {
+    public static class Sys {
         public String country;
         public long sunrise;
         public long sunset;
     }
 
-    public class Weather {
+    public static class Weather {
         public String main;
         public String description;
         public String icon;
