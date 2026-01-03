@@ -25,7 +25,7 @@ public class HourlyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hourly);
 
-        recyclerView = findViewById(R.id.hourly_recycler);
+        recyclerView = findViewById(R.id.hourly_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         hourlyList = new ArrayList<>();
@@ -35,7 +35,11 @@ public class HourlyActivity extends AppCompatActivity {
         double lat = getIntent().getDoubleExtra("lat", 0);
         double lon = getIntent().getDoubleExtra("lon", 0);
 
-        fetchHourlyForecast(lat, lon);
+        if (lat != 0 || lon != 0) {
+            fetchHourlyForecast(lat, lon);
+        } else {
+            Toast.makeText(this, "Coordinates not found", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void fetchHourlyForecast(double lat, double lon) {
@@ -49,6 +53,7 @@ public class HourlyActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    hourlyList.clear();
                     hourlyList.addAll(response.body().list);
                     adapter.notifyDataSetChanged();
                 }

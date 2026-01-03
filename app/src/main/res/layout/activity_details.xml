@@ -7,6 +7,10 @@
     android:background="@drawable/background"
     tools:context=".DetailsActivity">
 
+
+
+
+
     <TextView
         android:id="@+id/detailsTitle"
         android:layout_width="match_parent"

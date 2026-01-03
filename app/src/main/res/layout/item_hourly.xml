@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="80dp"
+    android:layout_width="100dp"
     android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="#1A000000"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="10dp">
-
-    <TextView
-        android:id="@+id/hourly_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="71°"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/hourly_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp" />
+    android:padding="12dp">
 
     <TextView
         android:id="@+id/hourly_time"
@@ -29,5 +15,22 @@
         android:text="Now"
         android:textColor="#BDBDBD"
         android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/hourly_icon"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="weather icon" />
+
+    <TextView
+        android:id="@+id/hourly_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="25°"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

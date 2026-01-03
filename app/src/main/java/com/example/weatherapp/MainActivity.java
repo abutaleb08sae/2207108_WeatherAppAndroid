@@ -8,8 +8,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -24,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText searchCityEt;
     private Button searchBtn, btnSeeMore;
     private TextView countryTv, cityTv, tempTv, latTv, lonTv, sunriseTv, sunsetTv, windTv, humidityTv, airAqiTv;
-    private RecyclerView hourlyRecycler;
     private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
     private Retrofit retrofit;
     private double currentLat, currentLon;
@@ -47,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
         windTv = findViewById(R.id.wind_speed);
         humidityTv = findViewById(R.id.humidity);
         airAqiTv = findViewById(R.id.air_aqi);
-
-        hourlyRecycler = findViewById(R.id.hourly_recycler);
-        hourlyRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.openweathermap.org/data/2.5/")
@@ -125,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
         Locale l = new Locale("", data.sys.country);
         countryTv.setText("Country: " + l.getDisplayCountry());
 
-        String status = data.weather.get(0).main;
         tempTv.setText(Math.round(data.main.temp) + "°");
 
         cityTv.setText(data.name);
@@ -139,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         btnSeeMore.setVisibility(View.VISIBLE);
 
         fetchAirQuality(currentLat, currentLon);
-        fetchHourlyForecast(currentLat, currentLon);
     }
 
     private void fetchAirQuality(double lat, double lon) {
@@ -155,22 +147,6 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<AirResponse> call, Throwable t) {}
-        });
-    }
-
-    private void fetchHourlyForecast(double lat, double lon) {
-        WeatherApi api = retrofit.create(WeatherApi.class);
-        api.getForecast(lat, lon, API_KEY, "metric").enqueue(new Callback<ForecastResponse>() {
-            @Override
-            public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    HourlyAdapter adapter = new HourlyAdapter(MainActivity.this, response.body().list);
-                    hourlyRecycler.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ForecastResponse> call, Throwable t) {}
         });
     }
 
