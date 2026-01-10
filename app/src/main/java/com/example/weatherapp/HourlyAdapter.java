@@ -17,9 +17,9 @@ import java.util.Locale;
 public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.ViewHolder> {
 
     private Context context;
-    private List<HourlyModel> hourlyList;
+    private List<ForecastResponse.HourlyModel> hourlyList;
 
-    public HourlyAdapter(Context context, List<HourlyModel> hourlyList) {
+    public HourlyAdapter(Context context, List<ForecastResponse.HourlyModel> hourlyList) {
         this.context = context;
         this.hourlyList = hourlyList;
     }
@@ -33,7 +33,7 @@ public class HourlyAdapter extends RecyclerView.Adapter<HourlyAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        HourlyModel model = hourlyList.get(position);
+        ForecastResponse.HourlyModel model = hourlyList.get(position);
 
         holder.temp.setText(Math.round(model.main.temp) + "°");
 

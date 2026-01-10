@@ -15,9 +15,9 @@ import java.util.Locale;
 
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHolder> {
 
-    private List<ForecastResponse.ForecastItem> forecastList;
+    private List<ForecastResponse.HourlyModel> forecastList;
 
-    public ForecastAdapter(List<ForecastResponse.ForecastItem> forecastList) {
+    public ForecastAdapter(List<ForecastResponse.HourlyModel> forecastList) {
         this.forecastList = forecastList;
     }
 
@@ -30,27 +30,20 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ForecastResponse.ForecastItem item = forecastList.get(position);
+        ForecastResponse.HourlyModel item = forecastList.get(position);
 
-        if (item != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.getDefault());
-            String dayName = sdf.format(new Date(item.dt * 1000));
-            holder.dayTv.setText(dayName);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM d", Locale.getDefault());
+        holder.dayTv.setText(sdf.format(new Date(item.dt * 1000)));
 
-            if (item.main != null) {
-                holder.tempTv.setText(Math.round(item.main.temp) + "°");
-            }
+        holder.tempTv.setText(Math.round(item.main.temp) + "°C");
 
-            if (item.weather != null && !item.weather.isEmpty()) {
-                String iconUrl = "https://openweathermap.org/img/wn/" + item.weather.get(0).icon + "@2x.png";
-                Glide.with(holder.itemView.getContext()).load(iconUrl).into(holder.iconIv);
-            }
-        }
+        String iconUrl = "https://openweathermap.org/img/wn/" + item.weather.get(0).icon + "@4x.png";
+        Glide.with(holder.itemView.getContext()).load(iconUrl).into(holder.iconIv);
     }
 
     @Override
     public int getItemCount() {
-        return forecastList != null ? forecastList.size() : 0;
+        return forecastList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

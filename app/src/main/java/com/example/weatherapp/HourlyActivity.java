@@ -17,7 +17,7 @@ public class HourlyActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private HourlyAdapter adapter;
-    private List<HourlyModel> hourlyList;
+    private List<ForecastResponse.HourlyModel> hourlyList;
     private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
 
     @Override

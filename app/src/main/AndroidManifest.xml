@@ -47,8 +47,7 @@
 
         <activity
             android:name=".ForecastActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
 
     </application>
 

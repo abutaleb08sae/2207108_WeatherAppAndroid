@@ -3,6 +3,7 @@ package com.example.weatherapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -29,9 +30,15 @@ public class DetailsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        btnWeekly.setOnClickListener(v -> {
+            Intent intent = new Intent(DetailsActivity.this, ForecastActivity.class);
+            intent.putExtra("lat", lat);
+            intent.putExtra("lon", lon);
+            startActivity(intent);
+        });
 
         btnMonthly.setOnClickListener(v -> {
-            // Placeholder for future implementation
+            Toast.makeText(DetailsActivity.this, "Monthly forecast coming soon!", Toast.LENGTH_SHORT).show();
         });
     }
 }
