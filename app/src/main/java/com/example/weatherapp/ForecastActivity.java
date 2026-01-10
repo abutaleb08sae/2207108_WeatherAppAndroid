@@ -1,0 +1,74 @@
+package com.example.weatherapp;
+
+import android.os.Bundle;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class ForecastActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerView;
+    private ForecastAdapter adapter;
+    private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_forecast);
+
+        recyclerView = findViewById(R.id.forecastRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        double lat = getIntent().getDoubleExtra("lat", 0);
+        double lon = getIntent().getDoubleExtra("lon", 0);
+
+        if (lat != 0 || lon != 0) {
+            fetchForecast(lat, lon);
+        } else {
+            Toast.makeText(this, "Coordinates not found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void fetchForecast(double lat, double lon) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/data/2.5/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        WeatherApi api = retrofit.create(WeatherApi.class);
+        api.getForecast(lat, lon, API_KEY, "metric").enqueue(new Callback<ForecastResponse>() {
+            @Override
+            public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<ForecastResponse.ForecastItem> filteredList = new ArrayList<>();
+
+                    if (response.body().list != null) {
+                        for (ForecastResponse.ForecastItem item : response.body().list) {
+                            if (item.dt_txt != null && item.dt_txt.contains("12:00:00")) {
+                                filteredList.add(item);
+                            }
+                        }
+                    }
+
+                    adapter = new ForecastAdapter(filteredList);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Toast.makeText(ForecastActivity.this, "Failed to get forecast", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ForecastResponse> call, Throwable t) {
+                Toast.makeText(ForecastActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}

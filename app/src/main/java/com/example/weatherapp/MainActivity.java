@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private EditText searchCityEt;
-    private Button searchBtn, btnSeeMore;
+    private Button searchBtn, btnSeeMore, btnWeekly;
     private TextView countryTv, cityTv, tempTv, latTv, lonTv, sunriseTv, sunsetTv, windTv, humidityTv, airAqiTv;
     private TextView statusTv, feelsLikeTv, descriptionTv;
     private ImageView mainWeatherIcon;
@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         searchCityEt = findViewById(R.id.editTextText);
         searchBtn = findViewById(R.id.button);
         btnSeeMore = findViewById(R.id.btn_see_more);
+        btnWeekly = findViewById(R.id.btn_weekly_forecast);
+
         countryTv = findViewById(R.id.country);
         cityTv = findViewById(R.id.city);
         tempTv = findViewById(R.id.textView4);
@@ -81,6 +83,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             } else {
                 Toast.makeText(MainActivity.this, "Please search for a city first", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnWeekly.setOnClickListener(v -> {
+            if (currentLat != 0 || currentLon != 0) {
+                Intent intent = new Intent(MainActivity.this, ForecastActivity.class);
+                intent.putExtra("lat", currentLat);
+                intent.putExtra("lon", currentLon);
+                startActivity(intent);
+            } else {
+                Toast.makeText(MainActivity.this, "Search a city to see forecast", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -151,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         sunsetTv.setText(": " + formatTime(data.sys.sunset));
 
         btnSeeMore.setVisibility(View.VISIBLE);
+        btnWeekly.setVisibility(View.VISIBLE);
 
         fetchAirQuality(currentLat, currentLon);
     }
