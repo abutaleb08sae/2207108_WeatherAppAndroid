@@ -34,4 +34,12 @@ public interface WeatherApi {
             @Query("appid") String apiKey,
             @Query("units") String units
     );
+
+    @GET("weather")
+    Call<WeatherResponse> getCurrentWeather(
+            @Query("lat") double lat,
+            @Query("lon") double lon,
+            @Query("appid") String apiKey,
+            @Query("units") String units
+    );
 }

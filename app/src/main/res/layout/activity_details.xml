@@ -7,10 +7,6 @@
     android:background="@drawable/background"
     tools:context=".DetailsActivity">
 
-
-
-
-
     <TextView
         android:id="@+id/detailsTitle"
         android:layout_width="match_parent"
@@ -72,6 +68,20 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             app:icon="@android:drawable/ic_menu_month"
+            app:iconGravity="textStart"
+            app:iconPadding="15dp" />
+
+        <Button
+            android:id="@+id/btn_weather_details"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="15dp"
+            android:backgroundTint="#1F2E47"
+            android:text="Details Weather"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:icon="@android:drawable/ic_menu_info_details"
             app:iconGravity="textStart"
             app:iconPadding="15dp" />
 

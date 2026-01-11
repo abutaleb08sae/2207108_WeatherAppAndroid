@@ -53,6 +53,10 @@
             android:name=".MonthlyActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".WeatherInfoActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

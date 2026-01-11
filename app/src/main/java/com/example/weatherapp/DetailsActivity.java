@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private Button btnHourly, btnWeekly, btnMonthly;
+    private Button btnHourly, btnWeekly, btnMonthly, btnWeatherDetails;
     private double lat, lon;
 
     @Override
@@ -21,6 +21,7 @@ public class DetailsActivity extends AppCompatActivity {
         btnHourly = findViewById(R.id.btn_hourly_forecast);
         btnWeekly = findViewById(R.id.btn_weekly_forecast);
         btnMonthly = findViewById(R.id.btn_monthly_forecast);
+        btnWeatherDetails = findViewById(R.id.btn_weather_details);
 
         btnHourly.setOnClickListener(v -> {
             Intent intent = new Intent(DetailsActivity.this, HourlyActivity.class);
@@ -38,6 +39,13 @@ public class DetailsActivity extends AppCompatActivity {
 
         btnMonthly.setOnClickListener(v -> {
             Intent intent = new Intent(DetailsActivity.this, MonthlyActivity.class);
+            intent.putExtra("lat", lat);
+            intent.putExtra("lon", lon);
+            startActivity(intent);
+        });
+
+        btnWeatherDetails.setOnClickListener(v -> {
+            Intent intent = new Intent(DetailsActivity.this, WeatherInfoActivity.class);
             intent.putExtra("lat", lat);
             intent.putExtra("lon", lon);
             startActivity(intent);
