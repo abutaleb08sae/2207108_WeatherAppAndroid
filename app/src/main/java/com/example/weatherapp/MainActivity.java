@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusTv, feelsLikeTv, descriptionTv;
     private ImageView mainWeatherIcon;
     private ListView historyListView;
+    private View historyContainer;
 
     private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
     private Retrofit retrofit;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         btnSeeMore = findViewById(R.id.btn_see_more);
         btnClearHistory = findViewById(R.id.btn_clear_history);
         historyListView = findViewById(R.id.historyListView);
+        historyContainer = findViewById(R.id.historyContainer);
 
         countryTv = findViewById(R.id.country);
         cityTv = findViewById(R.id.city);
@@ -79,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        dbRef = FirebaseDatabase.getInstance().getReference("search_history");
+        dbRef = FirebaseDatabase.getInstance("https://weather-app-58898-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                .getReference("search_history");
 
         historyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, historyNames);
         historyListView.setAdapter(historyAdapter);
@@ -100,20 +103,23 @@ public class MainActivity extends AppCompatActivity {
             if (!city.isEmpty()) {
                 fetchWeather(city);
                 saveToHistory(city);
-                historyListView.setVisibility(View.GONE);
-                btnClearHistory.setVisibility(View.GONE);
+                hideHistory();
+            }
+        });
+
+        searchCityEt.setOnClickListener(v -> {
+            if (!historyNames.isEmpty()) {
+                showHistory();
             }
         });
 
         searchCityEt.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && !historyNames.isEmpty()) {
-                historyListView.setVisibility(View.VISIBLE);
-                btnClearHistory.setVisibility(View.VISIBLE);
+            if (hasFocus) {
+                if (!historyNames.isEmpty()) {
+                    showHistory();
+                }
             } else {
-                historyListView.postDelayed(() -> {
-                    historyListView.setVisibility(View.GONE);
-                    btnClearHistory.setVisibility(View.GONE);
-                }, 200);
+                historyListView.postDelayed(this::hideHistory, 300);
             }
         });
 
@@ -121,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
             String city = historyNames.get(position);
             searchCityEt.setText(city);
             fetchWeather(city);
-            historyListView.setVisibility(View.GONE);
-            btnClearHistory.setVisibility(View.GONE);
+            hideHistory();
             searchCityEt.clearFocus();
         });
 
@@ -134,8 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnClearHistory.setOnClickListener(v -> {
             dbRef.removeValue();
-            historyListView.setVisibility(View.GONE);
-            btnClearHistory.setVisibility(View.GONE);
+            hideHistory();
         });
 
         btnSeeMore.setOnClickListener(v -> {
@@ -148,6 +152,19 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Please search for a city first", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showHistory() {
+        historyContainer.setVisibility(View.VISIBLE);
+        historyListView.setVisibility(View.VISIBLE);
+        btnClearHistory.setVisibility(View.VISIBLE);
+        historyContainer.bringToFront();
+    }
+
+    private void hideHistory() {
+        historyContainer.setVisibility(View.GONE);
+        historyListView.setVisibility(View.GONE);
+        btnClearHistory.setVisibility(View.GONE);
     }
 
     private void saveToHistory(String city) {
@@ -254,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
         api.getAirQuality(lat, lon, API_KEY).enqueue(new Callback<AirResponse>() {
             @Override
             public void onResponse(Call<AirResponse> call, Response<AirResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && !response.body().list.isEmpty()) {
                     int aqi = response.body().list.get(0).main.aqi;
                     String[] aqiLevels = {"", "Good", "Fair", "Moderate", "Poor", "Very Poor"};
                     if (aqi >= 1 && aqi <= 5) {
