@@ -1,8 +1,10 @@
 package com.example.weatherapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,7 +86,15 @@ public class MainActivity extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance("https://weather-app-58898-default-rtdb.asia-southeast1.firebasedatabase.app/")
                 .getReference("search_history");
 
-        historyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, historyNames);
+        historyAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, historyNames) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                TextView tv = (TextView) super.getView(position, convertView, parent);
+                tv.setTextColor(Color.BLACK);
+                return tv;
+            }
+        };
         historyListView.setAdapter(historyAdapter);
 
         loadSearchHistory();
@@ -155,16 +165,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showHistory() {
-        historyContainer.setVisibility(View.VISIBLE);
-        historyListView.setVisibility(View.VISIBLE);
-        btnClearHistory.setVisibility(View.VISIBLE);
-        historyContainer.bringToFront();
+        if (historyContainer != null) {
+            historyContainer.setVisibility(View.VISIBLE);
+            historyContainer.bringToFront();
+        }
     }
 
     private void hideHistory() {
-        historyContainer.setVisibility(View.GONE);
-        historyListView.setVisibility(View.GONE);
-        btnClearHistory.setVisibility(View.GONE);
+        if (historyContainer != null) {
+            historyContainer.setVisibility(View.GONE);
+        }
     }
 
     private void saveToHistory(String city) {
