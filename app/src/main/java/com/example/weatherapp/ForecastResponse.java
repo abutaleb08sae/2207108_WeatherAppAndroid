@@ -23,9 +23,21 @@ public class ForecastResponse {
         public static class Main {
             @SerializedName("temp")
             public double temp;
+
+            @SerializedName("feels_like")
+            public double feels_like;
+
+            @SerializedName("humidity")
+            public int humidity;
         }
 
         public static class Weather {
+            @SerializedName("main")
+            public String main;
+
+            @SerializedName("description")
+            public String description;
+
             @SerializedName("icon")
             public String icon;
         }

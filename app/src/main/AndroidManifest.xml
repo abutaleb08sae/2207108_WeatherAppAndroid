@@ -49,6 +49,10 @@
             android:name=".ForecastActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".MonthlyActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

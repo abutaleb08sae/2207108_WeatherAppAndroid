@@ -3,15 +3,25 @@ package com.example.weatherapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,13 +32,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private EditText searchCityEt;
-    private Button searchBtn, btnSeeMore, btnWeekly;
+    private Button searchBtn, btnSeeMore, btnClearHistory;
     private TextView countryTv, cityTv, tempTv, latTv, lonTv, sunriseTv, sunsetTv, windTv, humidityTv, airAqiTv;
     private TextView statusTv, feelsLikeTv, descriptionTv;
     private ImageView mainWeatherIcon;
+    private ListView historyListView;
+
     private final String API_KEY = "5828bd5b646348de10e5a6be2b917c31";
     private Retrofit retrofit;
+    private DatabaseReference dbRef;
+
     private double currentLat, currentLon;
+    private List<String> historyNames = new ArrayList<>();
+    private List<String> historyKeys = new ArrayList<>();
+    private ArrayAdapter<String> historyAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         searchCityEt = findViewById(R.id.editTextText);
         searchBtn = findViewById(R.id.button);
         btnSeeMore = findViewById(R.id.btn_see_more);
-        btnWeekly = findViewById(R.id.btn_weekly_forecast);
+        btnClearHistory = findViewById(R.id.btn_clear_history);
+        historyListView = findViewById(R.id.historyListView);
 
         countryTv = findViewById(R.id.country);
         cityTv = findViewById(R.id.city);
@@ -61,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        dbRef = FirebaseDatabase.getInstance().getReference("search_history");
+
+        historyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, historyNames);
+        historyListView.setAdapter(historyAdapter);
+
+        loadSearchHistory();
+
         boolean fromGPS = getIntent().getBooleanExtra("fromGPS", false);
         if (fromGPS) {
             searchCityEt.setVisibility(View.GONE);
@@ -72,7 +97,45 @@ public class MainActivity extends AppCompatActivity {
 
         searchBtn.setOnClickListener(v -> {
             String city = searchCityEt.getText().toString().trim();
-            if (!city.isEmpty()) fetchWeather(city);
+            if (!city.isEmpty()) {
+                fetchWeather(city);
+                saveToHistory(city);
+                historyListView.setVisibility(View.GONE);
+                btnClearHistory.setVisibility(View.GONE);
+            }
+        });
+
+        searchCityEt.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && !historyNames.isEmpty()) {
+                historyListView.setVisibility(View.VISIBLE);
+                btnClearHistory.setVisibility(View.VISIBLE);
+            } else {
+                historyListView.postDelayed(() -> {
+                    historyListView.setVisibility(View.GONE);
+                    btnClearHistory.setVisibility(View.GONE);
+                }, 200);
+            }
+        });
+
+        historyListView.setOnItemClickListener((parent, view, position, id) -> {
+            String city = historyNames.get(position);
+            searchCityEt.setText(city);
+            fetchWeather(city);
+            historyListView.setVisibility(View.GONE);
+            btnClearHistory.setVisibility(View.GONE);
+            searchCityEt.clearFocus();
+        });
+
+        historyListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            dbRef.child(historyKeys.get(position)).removeValue();
+            Toast.makeText(this, "Removed from history", Toast.LENGTH_SHORT).show();
+            return true;
+        });
+
+        btnClearHistory.setOnClickListener(v -> {
+            dbRef.removeValue();
+            historyListView.setVisibility(View.GONE);
+            btnClearHistory.setVisibility(View.GONE);
         });
 
         btnSeeMore.setOnClickListener(v -> {
@@ -85,16 +148,35 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Please search for a city first", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        btnWeekly.setOnClickListener(v -> {
-            if (currentLat != 0 || currentLon != 0) {
-                Intent intent = new Intent(MainActivity.this, ForecastActivity.class);
-                intent.putExtra("lat", currentLat);
-                intent.putExtra("lon", currentLon);
-                startActivity(intent);
-            } else {
-                Toast.makeText(MainActivity.this, "Search a city to see forecast", Toast.LENGTH_SHORT).show();
+    private void saveToHistory(String city) {
+        if (!historyNames.contains(city)) {
+            String id = dbRef.push().getKey();
+            if (id != null) {
+                dbRef.child(id).child("cityName").setValue(city);
             }
+        }
+    }
+
+    private void loadSearchHistory() {
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                historyNames.clear();
+                historyKeys.clear();
+                for (DataSnapshot data : snapshot.getChildren()) {
+                    String name = data.child("cityName").getValue(String.class);
+                    if (name != null) {
+                        historyNames.add(0, name);
+                        historyKeys.add(0, data.getKey());
+                    }
+                }
+                historyAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
@@ -140,10 +222,10 @@ public class MainActivity extends AppCompatActivity {
 
         Locale l = new Locale("", data.sys.country);
         countryTv.setText("Country: " + l.getDisplayCountry());
-        cityTv.setText(data.name);
+        cityTv.setText("City: " + data.name);
 
         tempTv.setText(Math.round(data.main.temp) + "°");
-        feelsLikeTv.setText("Feels like " + Math.round(data.main.feels_like) + "°");
+        feelsLikeTv.setText("Feels like: " + Math.round(data.main.feels_like) + "°");
         statusTv.setText(data.weather.get(0).main);
 
         String desc = data.weather.get(0).description;
@@ -164,8 +246,6 @@ public class MainActivity extends AppCompatActivity {
         sunsetTv.setText(": " + formatTime(data.sys.sunset));
 
         btnSeeMore.setVisibility(View.VISIBLE);
-        btnWeekly.setVisibility(View.VISIBLE);
-
         fetchAirQuality(currentLat, currentLon);
     }
 
@@ -177,14 +257,15 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     int aqi = response.body().list.get(0).main.aqi;
                     String[] aqiLevels = {"", "Good", "Fair", "Moderate", "Poor", "Very Poor"};
-                    airAqiTv.setText(": " + aqiLevels[aqi]);
+                    if (aqi >= 1 && aqi <= 5) {
+                        airAqiTv.setText(": " + aqiLevels[aqi]);
+                    }
                 }
             }
             @Override
             public void onFailure(Call<AirResponse> call, Throwable t) {}
         });
     }
-    //for check push
 
     private String formatTime(long time) {
         return new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(time * 1000));
