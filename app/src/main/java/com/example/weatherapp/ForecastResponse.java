@@ -24,6 +24,12 @@ public class ForecastResponse {
             @SerializedName("temp")
             public double temp;
 
+            @SerializedName("temp_min")
+            public double temp_min;
+
+            @SerializedName("temp_max")
+            public double temp_max;
+
             @SerializedName("feels_like")
             public double feels_like;
 

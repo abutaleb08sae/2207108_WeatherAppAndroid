@@ -37,23 +37,33 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
         holder.tempTv.setText(Math.round(item.main.temp) + "°C");
 
-        String iconUrl = "https://openweathermap.org/img/wn/" + item.weather.get(0).icon + "@4x.png";
-        Glide.with(holder.itemView.getContext()).load(iconUrl).into(holder.iconIv);
+        if (item.weather != null && !item.weather.isEmpty()) {
+            String description = item.weather.get(0).description;
+            holder.descTv.setText(description.substring(0, 1).toUpperCase() + description.substring(1));
+
+            String iconUrl = "https://openweathermap.org/img/wn/" + item.weather.get(0).icon + "@4x.png";
+            Glide.with(holder.itemView.getContext()).load(iconUrl).into(holder.iconIv);
+        }
+
+        String highLow = "H: " + Math.round(item.main.temp_max) + "° L: " + Math.round(item.main.temp_min) + "°";
+        holder.highLowTv.setText(highLow);
     }
 
     @Override
     public int getItemCount() {
-        return forecastList.size();
+        return forecastList == null ? 0 : forecastList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView dayTv, tempTv;
+        TextView dayTv, tempTv, descTv, highLowTv;
         ImageView iconIv;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dayTv = itemView.findViewById(R.id.dayText);
             tempTv = itemView.findViewById(R.id.tempText);
+            descTv = itemView.findViewById(R.id.descriptionText);
+            highLowTv = itemView.findViewById(R.id.highLowText);
             iconIv = itemView.findViewById(R.id.forecastIcon);
         }
     }
