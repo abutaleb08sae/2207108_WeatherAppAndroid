@@ -78,10 +78,17 @@ public class MonthlyActivity extends AppCompatActivity {
                     for (ForecastResponse.HourlyModel item : response.body().list) {
                         tempCal.setTimeInMillis(item.dt * 1000L);
                         int day = tempCal.get(Calendar.DAY_OF_MONTH);
-                        int hour = tempCal.get(Calendar.HOUR_OF_DAY);
 
-                        if (!forecastMap.containsKey(day) || hour == 12) {
+                        if (!forecastMap.containsKey(day)) {
                             forecastMap.put(day, item);
+                        } else {
+                            ForecastResponse.HourlyModel existing = forecastMap.get(day);
+                            if (item.main.temp_max > existing.main.temp_max) {
+                                existing.main.temp_max = item.main.temp_max;
+                            }
+                            if (item.main.temp_min < existing.main.temp_min) {
+                                existing.main.temp_min = item.main.temp_min;
+                            }
                         }
                     }
 

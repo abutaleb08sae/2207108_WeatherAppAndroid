@@ -42,7 +42,9 @@ public class MonthlyAdapter extends RecyclerView.Adapter<MonthlyAdapter.ViewHold
                     holder.tempTv.setVisibility(View.VISIBLE);
                     holder.weatherIconIv.setVisibility(View.VISIBLE);
 
-                    holder.tempTv.setText(Math.round(data.main.temp) + "°");
+                    String highLow = Math.round(data.main.temp_max) + "°/" + Math.round(data.main.temp_min) + "°";
+                    holder.tempTv.setText(highLow);
+
                     String iconUrl = "https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@2x.png";
                     Glide.with(holder.itemView.getContext())
                             .load(iconUrl)
