@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,12 +45,7 @@ public class ForecastActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<ForecastResponse.HourlyModel> dailyList = new ArrayList<>();
-                    for (ForecastResponse.HourlyModel item : response.body().list) {
-                        if (item.dt_txt != null && item.dt_txt.contains("12:00:00")) {
-                            dailyList.add(item);
-                        }
-                    }
+                    List<ForecastResponse.HourlyModel> dailyList = processDailyForecasts(response.body().list);
                     adapter = new ForecastAdapter(dailyList);
                     recyclerView.setAdapter(adapter);
                 }
@@ -58,5 +55,33 @@ public class ForecastActivity extends AppCompatActivity {
             public void onFailure(Call<ForecastResponse> call, Throwable t) {
             }
         });
+    }
+
+    private List<ForecastResponse.HourlyModel> processDailyForecasts(List<ForecastResponse.HourlyModel> allForecasts) {
+        Map<String, ForecastResponse.HourlyModel> dailyMap = new LinkedHashMap<>();
+
+        for (ForecastResponse.HourlyModel item : allForecasts) {
+            String date = item.dt_txt.split(" ")[0];
+
+            if (!dailyMap.containsKey(date)) {
+                dailyMap.put(date, item);
+            } else {
+                ForecastResponse.HourlyModel day = dailyMap.get(date);
+
+                if (item.main.temp_max > day.main.temp_max) {
+                    day.main.temp_max = item.main.temp_max;
+                }
+
+                if (item.main.temp_min < day.main.temp_min) {
+                    day.main.temp_min = item.main.temp_min;
+                }
+
+                if (item.dt_txt.contains("12:00:00")) {
+                    day.weather = item.weather;
+                    day.main.temp = item.main.temp;
+                }
+            }
+        }
+        return new ArrayList<>(dailyMap.values());
     }
 }

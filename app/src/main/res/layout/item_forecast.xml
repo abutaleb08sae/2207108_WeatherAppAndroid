@@ -7,18 +7,18 @@
     app:cardCornerRadius="20dp"
     app:cardElevation="5dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background">
+        android:background="@drawable/background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
 
         <LinearLayout
-            android:id="@+id/dateGroup"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
+            android:layout_weight="1.5"
             android:orientation="vertical">
 
             <TextView
@@ -31,7 +31,7 @@
                 android:shadowRadius="2"
                 android:text="Tuesday, Jan 13"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -42,17 +42,22 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2"
-                android:text="Scattered Clouds"
+                android:text="Clear Sky"
                 android:textColor="#E0E0E0"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/forecastIcon"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:src="@android:drawable/ic_menu_report_image" />
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
             android:gravity="end"
             android:orientation="vertical">
 
@@ -82,12 +87,5 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/forecastIcon"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_centerInParent="true"
-            android:src="@android:drawable/ic_menu_report_image" />
-
-    </RelativeLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>
